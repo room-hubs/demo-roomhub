@@ -1,0 +1,320 @@
+# 🏠 RoomHub — Backend API
+
+A RESTful API for the RoomHub room rental marketplace, built with **Laravel 13** and **PHP 8.3+**.
+
+---
+
+## 📋 Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Laravel 13 |
+| Language | PHP 8.3+ |
+| Auth | Laravel Sanctum (token + refresh token) |
+| Database | MySQL |
+| Architecture | Service Layer Pattern |
+
+---
+
+## 📁 Folder Structure
+
+```
+backend/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Api/Auth/
+│   │   │   │   ├── ForgotPasswordController.php  # Handle forgot/reset password
+│   │   │   │   ├── LoginController.php            # User login & logout
+│   │   │   │   ├── RefreshController.php          # Refresh access token
+│   │   │   │   └── RegisterController.php         # User registration
+│   │   │   └── Controller.php                     # Base controller
+│   │   ├── Middleware/
+│   │   └── Requests/
+│   │       └── Api/Auth/
+│   │           ├── ForgotPasswordStoreRequest.php   # Validate send OTP
+│   │           ├── ForgotPasswordUpdateRequest.php  # Validate reset password
+│   │           ├── LoginStoreRequest.php            # Validate login
+│   │           ├── LoginUpdateRequest.php           # Validate logout / update
+│   │           ├── RefreshTokenRequest.php          # Validate token refresh
+│   │           ├── RegisterStoreRequest.php         # Validate registration
+│   │           └── RegisterUpdateRequest.php        # Validate profile update
+│   ├── Models/
+│   │   ├── RefreshToken.php                         # Refresh token model
+│   │   └── User.php                                 # User model
+│   ├── Providers/
+│   ├── Service/
+│   │   └── Api/
+│   │       └── Auth/
+│   │           ├── LoginService.php                 # Login / logout logic
+│   │           ├── RegisterService.php              # Registration logic
+│   │           └── RoleService.php                  # Role assignment logic
+│   └── Rooms/                                       # (coming soon)
+├── bootstrap/
+├── config/
+├── database/
+│   ├── migrations/
+│   ├── seeders/
+│   └── factories/
+├── routes/
+│   ├── api.php                                      # All API routes
+│   ├── console.php
+│   └── web.php
+├── storage/
+├── tests/
+└── vendor/
+```
+
+---
+
+## 🔐 Authentication Flow
+
+RoomHub uses a **dual-token strategy** — a short-lived access token + a refresh token stored in the `refresh_tokens` table.
+
+```
+Register ──► RoleService (assign role) ──► RegisterService ──► token pair returned
+Login    ──► LoginService ──► access_token + refresh_token
+Refresh  ──► RefreshTokenRequest ──► RefreshController ──► new access_token
+Logout   ──► revoke token ──► delete refresh_token
+```
+
+---
+
+## 🛣️ API Routes (`routes/api.php`)
+
+### Auth — Public Routes
+
+| Method | Endpoint | Controller | Description |
+|--------|----------|------------|-------------|
+| `POST` | `/api/auth/register` | `RegisterController` | Register new user |
+| `POST` | `/api/auth/login` | `LoginController` | Login with email & password |
+| `POST` | `/api/auth/refresh` | `RefreshController` | Refresh access token |
+| `POST` | `/api/auth/forgot-password` | `ForgotPasswordController` | Send OTP to phone/email |
+| `PUT` | `/api/auth/forgot-password` | `ForgotPasswordController` | Reset password with OTP |
+
+### Auth — Protected Routes (Sanctum)
+
+| Method | Endpoint | Controller | Description |
+|--------|----------|------------|-------------|
+| `POST` | `/api/auth/logout` | `LoginController` | Logout & revoke token |
+| `PUT` | `/api/auth/register` | `RegisterController` | Update user profile |
+
+---
+
+## 📦 Request Validation Classes
+
+| Request Class | Validates |
+|---------------|-----------|
+| `RegisterStoreRequest` | name, email, phone, password, password_confirmation |
+| `RegisterUpdateRequest` | name, phone, avatar (profile update) |
+| `LoginStoreRequest` | email, password |
+| `LoginUpdateRequest` | (logout / token revoke) |
+| `RefreshTokenRequest` | refresh_token |
+| `ForgotPasswordStoreRequest` | phone or email (send OTP) |
+| `ForgotPasswordUpdateRequest` | otp_code, password, password_confirmation |
+
+---
+
+## ⚙️ Services
+
+### `LoginService.php`
+- Validates credentials
+- Issues Sanctum access token
+- Creates refresh token record
+- Handles logout & token revocation
+
+### `RegisterService.php`
+- Creates new `User` record
+- Hashes password
+- Triggers role assignment via `RoleService`
+- Returns token pair on success
+
+### `RoleService.php`
+- Assigns `landlord` or `tenant` role to user
+- Can be called after registration or role-selection step
+
+---
+
+## 🗄️ Models
+
+### `User.php`
+```
+id, name, email, phone, password, role, is_active,
+avatar, provider, provider_id,
+email_verified_at, remember_token, timestamps
+```
+
+### `RefreshToken.php`
+```
+id, user_id, token (hashed), expires_at, timestamps
+```
+
+---
+
+## 🚀 Setup & Installation
+
+### Requirements
+- PHP >= 8.3
+- Composer
+- MySQL
+- Node.js (for `node_modules` — likely used for asset building)
+
+### Steps
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/your-org/roomhub-backend.git
+cd roomhub-backend
+
+# 2. Install PHP dependencies
+composer install
+
+# 3. Copy environment file
+cp .env.example .env
+
+# 4. Generate application key
+php artisan key:generate
+
+# 5. Configure .env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=roomhub
+DB_USERNAME=root
+DB_PASSWORD=
+
+# 6. Run migrations
+php artisan migrate
+
+# 7. (Optional) Run seeders
+php artisan db:seed
+
+# 8. Start development server
+php artisan serve
+# → http://localhost:8000
+```
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+php artisan test
+
+# Run specific test suite
+php artisan test --testsuite=Feature
+php artisan test --testsuite=Unit
+```
+
+Test files are located in the `tests/` directory.
+
+---
+
+## 📬 Example API Requests
+
+### Register
+```json
+POST /api/auth/register
+{
+  "name": "Sophea Chan",
+  "email": "sophea@email.com",
+  "phone": "+85512345678",
+  "password": "password123",
+  "password_confirmation": "password123"
+}
+```
+
+### Login
+```json
+POST /api/auth/login
+{
+  "email": "sophea@email.com",
+  "password": "password123"
+}
+```
+
+### Response (token pair)
+```json
+{
+  "success": true,
+  "data": {
+    "access_token": "...",
+    "refresh_token": "...",
+    "token_type": "Bearer",
+    "user": {
+      "id": 1,
+      "name": "Sophea Chan",
+      "role": "tenant"
+    }
+  }
+}
+```
+
+### Refresh Token
+```json
+POST /api/auth/refresh
+{
+  "refresh_token": "..."
+}
+```
+
+### Forgot Password — Send OTP
+```json
+POST /api/auth/forgot-password
+{
+  "phone": "+85512345678"
+}
+```
+
+### Forgot Password — Reset
+```json
+PUT /api/auth/forgot-password
+{
+  "otp_code": "1234",
+  "password": "newpassword123",
+  "password_confirmation": "newpassword123"
+}
+```
+
+---
+
+## 🌱 Environment Variables
+
+```env
+APP_NAME=RoomHub
+APP_ENV=local
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=roomhub
+DB_USERNAME=root
+DB_PASSWORD=
+
+SANCTUM_STATEFUL_DOMAINS=localhost:3000
+
+# (Optional) Google OAuth
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URI=http://localhost:3000/auth/callback
+```
+
+---
+
+## 📌 Git
+
+All files currently show untracked (**U**). Make your first commit:
+
+```bash
+git add .
+git commit -m "feat: initial backend structure for RoomHub"
+git push origin main
+```
+
+---
+
+## 📄 License
+
+MIT © RoomHub 2025

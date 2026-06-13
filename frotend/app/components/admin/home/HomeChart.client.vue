@@ -1,0 +1,117 @@
+<script setup>
+import { eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval, format } from 'date-fns'
+import { VisXYContainer, VisLine, VisAxis, VisArea, VisCrosshair, VisTooltip } from '@unovis/vue'
+
+const cardRef = useTemplateRef('cardRef')
+
+const props = defineProps({
+  period: {
+    type: String,
+    required: true,
+  },
+  range: {
+    type: Object,
+    required: true,
+  },
+})
+
+const { width } = useElementSize(cardRef)
+
+const data = ref([])
+
+watch(
+  [() => props.period, () => props.range],
+  () => {
+    const intervalFn = {
+      daily: eachDayOfInterval,
+      weekly: eachWeekOfInterval,
+      monthly: eachMonthOfInterval,
+    }[props.period]
+
+    const dates = intervalFn(props.range)
+    const min = 1000
+    const max = 10000
+
+    data.value = dates.map(date => ({
+      date,
+      amount: Math.floor(Math.random() * (max - min + 1)) + min,
+    }))
+  },
+  { immediate: true }
+)
+
+const x = (_, i) => i
+const y = (d) => d.amount
+
+const total = computed(() =>
+  data.value.reduce((acc, { amount }) => acc + amount, 0)
+)
+
+const formatNumber = new Intl.NumberFormat('en', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+}).format
+
+const formatDate = (date) => ({
+  daily: format(date, 'd MMM'),
+  weekly: format(date, 'd MMM'),
+  monthly: format(date, 'MMM yyyy'),
+})[props.period]
+
+const xTicks = (i) => {
+  if (i === 0 || i === data.value.length - 1 || !data.value[i]) return ''
+  return formatDate(data.value[i].date)
+}
+
+const template = (d) => `${formatDate(d.date)}: ${formatNumber(d.amount)}`
+</script>
+
+<template>
+  <UCard ref="cardRef" :ui="{ root: 'overflow-visible', body: 'px-0! pt-0! pb-3!' }">
+    <template #header>
+      <div>
+        <p class="text-xs text-muted uppercase mb-1.5">
+          Revenue
+        </p>
+        <p class="text-3xl text-highlighted font-semibold">
+          {{ formatNumber(total) }}
+        </p>
+      </div>
+    </template>
+
+    <VisXYContainer
+      v-if="data.length && width"
+      :data="data"
+      :padding="{ top: 40 }"
+      class="h-96"
+      :width="width"
+    >
+      <VisLine :x="x" :y="y" color="var(--ui-primary)" />
+      <VisArea :x="x" :y="y" color="var(--ui-primary)" :opacity="0.1" />
+      <VisAxis type="x" :x="x" :tick-format="xTicks" />
+      <VisCrosshair color="var(--ui-primary)" :template="template" />
+      <VisTooltip />
+    </VisXYContainer>
+
+    <!-- fallback while width is being measured -->
+    <div v-else class="h-96 flex items-center justify-center text-muted text-sm">
+      Loading chart...
+    </div>
+  </UCard>
+</template>
+
+<style scoped>
+.unovis-xy-container {
+  --vis-crosshair-line-stroke-color: var(--ui-primary);
+  --vis-crosshair-circle-stroke-color: var(--ui-bg);
+
+  --vis-axis-grid-color: var(--ui-border);
+  --vis-axis-tick-color: var(--ui-border);
+  --vis-axis-tick-label-color: var(--ui-text-dimmed);
+
+  --vis-tooltip-background-color: var(--ui-bg);
+  --vis-tooltip-border-color: var(--ui-border);
+  --vis-tooltip-text-color: var(--ui-text-highlighted);
+}
+</style>
