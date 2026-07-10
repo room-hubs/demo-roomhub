@@ -15,20 +15,28 @@ class RegisterController extends Controller
         protected RegisterService $registerService,
         protected RoleService $roleService,
     ) {}
-    
+
     // register constroller
     public function store(RegisterStoreRequest $request): JsonResponse
     {
-        $result = $this->registerService->register($request->validated());
+        $result = $this->registerService->register(
+            $request->validated(),
+            $request->ip(),
+            $request->header('User-Agent', 'web')
+        );
 
         return response()->json([
-            'success'    => true,
-            'message'    => $result['message'],
-            'user'       => $result['user'],
-            'token'      => $result['token'],       
-            'needs_role' => $result['needs_role'],  
+            'success'      => true,
+            'message'      => $result['message'],
+            'user'         => $result['user'],
+            'access_token' => $result['access_token'],
+            'token_type'   => $result['token_type'],
+            'expires_in'   => $result['expires_in'],
+            'token'        => $result['access_token'],
+            'needs_role'   => $result['needs_role'],
         ], 201);
     }
+
     // assign role to user
     public function update(RegisterUpdateRequest $request): JsonResponse
     {
@@ -39,10 +47,10 @@ class RegisterController extends Controller
 
         if (! $result['success']) {
             return response()->json([
-                'success' => true,
+                'success' => false,
                 'message' => $result['message'],
-                'user'    => $user, // keep user so frontend stays authenticated
-            ]);
+                'user'    => $user,
+            ], 400);
         }
 
         return response()->json([

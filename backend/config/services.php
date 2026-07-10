@@ -44,4 +44,10 @@ return [
         'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
         'redirect' => env('FACEBOOK_REDIRECT_URI'),
     ],
+    // sms with email
+    'twilio' => [
+        'sid'        => env('TWILIO_SID'),
+        'auth_token' => env('TWILIO_AUTH_TOKEN'),
+        'from'       => env('TWILIO_FROM_NUMBER'),
+    ],
 ];

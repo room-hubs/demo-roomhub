@@ -14,23 +14,23 @@ class LoginStoreRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'email' => strtolower(trim($this->input('email', ''))),
+            'login' => strtolower(trim($this->input('login', ''))),
         ]);
     }
 
     public function rules(): array
     {
         return [
-            'email'    => 'required|email:rfc|max:255',
+            'login'    => 'required|string|max:255',
             'password' => 'required|string|max:255',
+            'device_name' => 'nullable|string|max:100',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'email.required'    => 'Email is required.',
-            'email.email'       => 'Please provide a valid email.',
+            'login.required'    => 'Email or phone is required.',
             'password.required' => 'Password is required.',
         ];
     }

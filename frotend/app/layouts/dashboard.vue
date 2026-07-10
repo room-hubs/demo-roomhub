@@ -1,33 +1,42 @@
 <script setup>
-definePageMeta({ layout: false })
+definePageMeta({ layout: false });
 
-const { user, logout } = useAuth()
+const { user, logout } = useAuth();
 
 const navItems = computed(() => {
-  const isLandlord = user.value?.role === 'landlord'
+  const isLandlord = user.value?.role === "landlord";
   return [
-    { label: 'Dashboard',   icon: 'i-lucide-home',          to: '/dashboard' },
-    { label: isLandlord ? 'My Listings' : 'Browse Properties',
-                             icon: 'i-lucide-building-2',    to: isLandlord ? '/dashboard/listings' : '/dashboard/browse' },
-    { label: isLandlord ? 'Bookings' : 'Saved',
-                             icon: isLandlord ? 'i-lucide-calendar' : 'i-lucide-heart',
-                             to: isLandlord ? '/dashboard/bookings' : '/dashboard/saved' },
-  ]
-})
+    { label: "Dashboard", icon: "i-lucide-home", to: "/dashboard" },
+    {
+      label: isLandlord ? "My Listings" : "Browse Properties",
+      icon: "i-lucide-building-2",
+      to: isLandlord ? "/dashboard/listings" : "/dashboard/browse",
+    },
+    {
+      label: isLandlord ? "Bookings" : "Saved",
+      icon: isLandlord ? "i-lucide-calendar" : "i-lucide-heart",
+      to: isLandlord ? "/dashboard/bookings" : "/dashboard/saved",
+    },
+  ];
+});
 
 const initials = computed(() => {
-  if (!user.value?.name) return '?'
-  return user.value.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
-})
+  if (!user.value?.name) return "?";
+  return user.value.name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+});
 
 const handleLogout = async () => {
-  await logout()
-}
+  await logout();
+};
 </script>
 
 <template>
   <div class="wrap">
-
     <!-- ── Sidebar ── -->
     <aside class="side">
       <div class="logo">
@@ -41,7 +50,7 @@ const handleLogout = async () => {
           :name="user?.role === 'landlord' ? 'i-lucide-home' : 'i-lucide-search'"
           class="size-3.5"
         />
-        {{ user?.role === 'landlord' ? 'Landlord' : 'Rental' }}
+        {{ user?.role === "landlord" ? "Landlord" : "Rental" }}
       </div>
 
       <!-- Nav -->
@@ -74,7 +83,7 @@ const handleLogout = async () => {
           <div class="avatar">{{ initials }}</div>
           <div class="user-info">
             <p>{{ user?.name }}</p>
-            <span>{{ user?.role === 'landlord' ? 'Landlord' : 'Rental member' }}</span>
+            <span>{{ user?.role === "landlord" ? "Landlord" : "Rental member" }}</span>
           </div>
         </div>
 
@@ -89,7 +98,6 @@ const handleLogout = async () => {
     <main class="main">
       <slot />
     </main>
-
   </div>
 </template>
 
@@ -130,8 +138,14 @@ const handleLogout = async () => {
   gap: 6px;
 }
 
-.role-badge.rental   { background: #E1F5EE; color: #0F6E56; }
-.role-badge.landlord { background: #EEEDFE; color: #3C3489; }
+.role-badge.rental {
+  background: #e1f5ee;
+  color: #0f6e56;
+}
+.role-badge.landlord {
+  background: #eeedfe;
+  color: #3c3489;
+}
 
 .nav {
   padding: 8px 0;
@@ -149,7 +163,9 @@ const handleLogout = async () => {
   transition: background 0.15s;
 }
 
-.nav-item:hover { background: #f9fafb; }
+.nav-item:hover {
+  background: #f9fafb;
+}
 .nav-item.active {
   background: #f3f4f6;
   color: #111827;
@@ -191,8 +207,15 @@ const handleLogout = async () => {
   flex-shrink: 0;
 }
 
-.user-info p    { font-size: 13px; font-weight: 500; color: #111827; }
-.user-info span { font-size: 11px; color: #6b7280; }
+.user-info p {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+}
+.user-info span {
+  font-size: 11px;
+  color: #6b7280;
+}
 
 .logout-btn {
   width: 100%;
@@ -224,7 +247,11 @@ const handleLogout = async () => {
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-  .wrap { grid-template-columns: 1fr; }
-  .side { display: none; }
+  .wrap {
+    grid-template-columns: 1fr;
+  }
+  .side {
+    display: none;
+  }
 }
 </style>

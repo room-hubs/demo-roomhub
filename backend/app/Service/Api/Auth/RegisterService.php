@@ -2,62 +2,78 @@
 
 namespace App\Service\Api\Auth;
 
-use App\Models\RefreshToken;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class RegisterService
 {
-    // registe function
-    public function register(array $data): array
+    /*
+    |--------------------------------------------------------------------------
+    | REGISTER USER (SPATIE READY)
+    |--------------------------------------------------------------------------
+    */
+    public function register(array $data, string $ip, string $device): array
     {
         $user = User::create([
             'name'     => $data['name'],
-            'email'    => $data['email']    ?? null,
-            'phone'    => $data['phone']    ?? null,
+            'email'    => $data['email'] ?? null,
+            'phone'    => $data['phone'] ?? null,
             'password' => Hash::make($data['password']),
-            'status'   => 'active', // activated after role assignment
+            'status'   => 'active',
         ]);
 
         Log::info('New user registered', [
             'user_id' => $user->id,
-            'ip'      => request()->ip(),
+            'ip'      => $ip,
         ]);
 
-        // Issue both access + refresh tokens 
-        $tokens = $this->issueSetupTokens($user);
+        /*
+        |--------------------------------------------------------------------------
+        | DEFAULT ROLE (OPTIONAL)
+        |--------------------------------------------------------------------------
+        | If you want every new user to be "rental" by default:
+        */
+        $user->assignRole('rental');
+
+        $token = $this->issueSetupToken($user, $device);
 
         return [
-            'success'       => true,
-            'message'       => 'Registration successful. Please select your role.',
-            'user'          => $this->formatUser($user),
-            'token'         => $tokens['access_token'],
-            'refresh_token' => $tokens['refresh_token'],
-            'needs_role'    => true,
+            'success' => true,
+            'message' => 'Registration successful.',
+            'user'    => $this->formatUser($user->refresh()),
+            ...$token,
+            'needs_role' => false, // because role is already assigned
         ];
     }
 
-    // ISSUE SETUP TOKENS
-    // Short-lived access token + refresh token for new users    
-    private function issueSetupTokens(User $user): array
+    /*
+    |--------------------------------------------------------------------------
+    | SANCTUM TOKEN (NO REFRESH TOKEN SYSTEM)
+    |--------------------------------------------------------------------------
+    */
+    private function issueSetupToken(User $user, string $device = 'web'): array
     {
-        $device = request()->input('device_name', 'web');
+        $user->tokens()->where('name', "setup:{$device}")->delete();
 
-        // Short-lived setup token — expires in 1 hour
         $accessToken = $user->createToken(
-            "setup:{$device}", ['*'], now()->addHour()
+            "setup:{$device}",
+            ['*'],
+            now()->addHour()
         )->plainTextToken;
 
-        // Issue refresh token so silent refresh works after registration
-        $refresh = RefreshToken::generate($user, $device);
-
         return [
-            'access_token'  => $accessToken,
-            'refresh_token' => $refresh['plain'],
+            'access_token' => $accessToken,
+            'token_type'   => 'Bearer',
+            'expires_in'   => 3600,
         ];
     }
-    // formate user
+
+    /*
+    |--------------------------------------------------------------------------
+    | FORMAT USER (SPATIE ROLES)
+    |--------------------------------------------------------------------------
+    */
     private function formatUser(User $user): array
     {
         $roles = $user->getRoleNames();

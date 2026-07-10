@@ -11,12 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('refresh_tokens', function (Blueprint $table) {
+        Schema::create('phone_otp_verifications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('token', 64)->unique(); // hashed
-            $table->string('device_name')->default('web');
-            $table->timestamp('expires_at');
+            $table->string('phone_number')->index();
+            $table->string('otp_code');
+            $table->string('purpose')->index();
+            // register, login, reset_password
+            $table->boolean('is_used')->default(false);
+            $table->unsignedTinyInteger('attempts')->default(0);
+            $table->timestamp('expires_at')->index();
             $table->timestamps();
         });
     }
@@ -26,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('refresh_tokens');
+        Schema::dropIfExists('phone_otp_verifications');
     }
 };

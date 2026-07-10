@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\SocialAccount;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -20,8 +20,6 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
-        'provider',
-        'provider_id',
         'avatar',
         'status',
     ];
@@ -35,21 +33,11 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
+            'password' => 'hashed',
         ];
     }
 
-    // ---------------------------------------------------------
-    // RELATIONS
-    // ---------------------------------------------------------
-    public function refreshTokens(): HasMany
-    {
-        return $this->hasMany(RefreshToken::class);
-    }
-
-    // ---------------------------------------------------------
     // ROLE CHECKS
-    // ---------------------------------------------------------
     public function isAdmin(): bool
     {
         return $this->hasRole('admin');
@@ -65,9 +53,13 @@ class User extends Authenticatable
         return $this->hasRole('rental');
     }
 
-    // ---------------------------------------------------------
+    // SOCIAL ACCOUNTS
+    public function socialAccounts()
+    {
+        return $this->hasMany(SocialAccount::class);
+    }
+
     // STATUS CHECKS
-    // ---------------------------------------------------------
     public function isActive(): bool
     {
         return $this->status === 'active';

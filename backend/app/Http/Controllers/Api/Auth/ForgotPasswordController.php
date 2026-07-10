@@ -3,47 +3,39 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Service\Api\Auth\ForgotPasswordService;
 use Illuminate\Http\Request;
 
 class ForgotPasswordController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected ForgotPasswordService $service;
+
+    public function __construct(ForgotPasswordService $service)
     {
-        //
+        $this->service = $service;
     }
 
     /**
-     * Store a newly created resource in storage.
+     * STEP 1: Send OTP to phone
      */
-    public function store(Request $request)
+    public function checkPhone(Request $request)
     {
-        //
+        return $this->service->checkPhone($request);
     }
 
     /**
-     * Display the specified resource.
+     * STEP 2: Verify OTP
      */
-    public function show(string $id)
+    public function verifyOtp(Request $request)
     {
-        //
+        return $this->service->verifyOtp($request);
     }
 
     /**
-     * Update the specified resource in storage.
+     * STEP 3: Reset password
      */
-    public function update(Request $request, string $id)
+    public function resetPasswordByPhone(Request $request)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return $this->service->resetPasswordByPhone($request);
     }
 }

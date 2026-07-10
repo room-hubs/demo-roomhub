@@ -16,8 +16,8 @@ html::-webkit-scrollbar {
 } */
 
 @theme static {
-  --font-sans: 'Public Sans', sans-serif;
-
+  /* --font-sans: 'Public Sans', sans-serif; */
+  --font-sans: 'Public Sans', 'Noto Sans', 'Noto Sans Khmer', 'Noto Sans SC', sans-serif;
   --color-green-50: #EFFDF5;
   --color-green-100: #D9FBE8;
   --color-green-200: #B3F5D1;

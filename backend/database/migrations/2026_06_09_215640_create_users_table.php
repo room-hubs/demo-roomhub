@@ -14,17 +14,13 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->nullable()->unique()->index();
-            $table->string('phone')->nullable()->unique()->index();
-            $table->string('password')->nullable();
-            $table->string('provider')->nullable();
-            $table->string('provider_id')->nullable();
-            $table->unique(['provider', 'provider_id']);
-            $table->index(['provider', 'provider_id']);
-            $table->string('avatar')->nullable();
-            $table->enum('status', ['active', 'inactive', 'pending'])->default('pending');
+            $table->string('email')->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->rememberToken();
+            $table->string('phone')->nullable()->unique();
+            $table->boolean('phone_verified')->default(false);
+            $table->string('password')->nullable();
+            $table->string('avatar')->nullable();
+            $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
             $table->timestamps();
         });
     }

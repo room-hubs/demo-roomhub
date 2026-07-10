@@ -1,21 +1,18 @@
 export default defineNuxtRouteMiddleware((to) => {
-  const { token, user } = useAuth()
+  const { token } = useAuth()
 
-  const publicRoutes = [
-    '/auth/login',
-    '/auth/sign-up',
-    '/auth/callback',
-    '/auth/error',
-    '/admin/login',
-    '/',
-    '/room-detail',
+  const isPublic =
+    to.path === '/' ||
+    to.path.startsWith('/auth') ||
+    to.path.startsWith('/listing') ||
+    to.path.startsWith('/detail') ||
+    to.path.startsWith('/rooms/') ||
+    to.path.startsWith('/test-location')
 
+  if (isPublic) return
 
-  ]
-
-  if (publicRoutes.includes(to.path)) return
-
-  if (!token.value) {
+  // wait until auth is actually initialized
+  if (!token?.value) {
     return navigateTo('/auth/login', { replace: true })
   }
 })

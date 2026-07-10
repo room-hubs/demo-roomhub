@@ -1,9 +1,20 @@
 <template>
-  <div class="layout">
+  <div class="flex min-h-screen flex-col bg-gray-50">
+    <!-- Navbar -->
     <Navbar />
-    <main class="main">
-      <slot />
-    </main>    
-    <Footer/>
+
+    <!-- Main Content -->
+    <main class="flex-1">
+      <div class="mx-auto w-full">
+        <slot />
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <Footer />
   </div>
 </template>
+
+<script setup>
+// Nuxt auto-imports Navbar and Footer components
+</script>

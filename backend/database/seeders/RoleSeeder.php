@@ -10,21 +10,17 @@ class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+        $roles = [
+            'admin',
+            'user',
+            'landlord',
+        ];
 
-        Role::firstOrCreate([
-            'name' => 'admin',
-            'guard_name' => 'sanctum',
-        ]);
-
-        Role::firstOrCreate([
-            'name' => 'landlord',
-            'guard_name' => 'sanctum',
-        ]);
-
-        Role::firstOrCreate([
-            'name' => 'rental',
-            'guard_name' => 'sanctum',
-        ]);
+        foreach ($roles as $role) {
+            Role::firstOrCreate([
+                'name' => $role,
+                'guard_name' => 'sanctum',
+            ]);
+        }
     }
 }

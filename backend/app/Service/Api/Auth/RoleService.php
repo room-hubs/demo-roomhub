@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 
 class RoleService
 {
-    private const ALLOWED_ROLES = ['landlord', 'tenant', 'rental'];
+    private const ALLOWED_ROLES = ['landlord', 'user', 'admin'];
     // update role
     public function updateRole(User $user, string $role): array
     {

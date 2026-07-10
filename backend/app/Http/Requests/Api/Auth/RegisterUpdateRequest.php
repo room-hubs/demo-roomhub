@@ -14,7 +14,7 @@ class RegisterUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'role' => 'required|in:rental,landlord',
+            'role' => 'required|exists:roles,name',
         ];
     }
 
@@ -22,7 +22,7 @@ class RegisterUpdateRequest extends FormRequest
     {
         return [
             'role.required' => 'Role is required.',
-            'role.in'       => 'Role must be rental or landlord.',
+            'role.exists'   => 'Selected role is invalid.',
         ];
     }
 }

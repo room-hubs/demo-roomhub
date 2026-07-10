@@ -14,16 +14,18 @@ class ForgotPasswordStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email|exists:users,email',
+            // Validate specific to Cambodia (+855)
+            // 'phone' => 'required|phone:KH|exists:users,phone',
+            'phone' => ['required', 'phone:KH'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'email.required' => 'Email is required.',
-            'email.email'    => 'Please provide a valid email.',
-            'email.exists'   => 'No account found with this email.',
+            'phone.required' => 'Phone number is required.',
+            'phone.phone'    => 'Please provide a valid Cambodian phone number.',
+            'phone.exists'   => 'No account found with this phone number.',
         ];
     }
 }
