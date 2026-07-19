@@ -7,6 +7,8 @@ export default defineNuxtRouteMiddleware((to) => {
     to.path.startsWith('/listing') ||
     to.path.startsWith('/detail') ||
     to.path.startsWith('/rooms/') ||
+    to.path.startsWith('/host')  ||
+    to.path.startsWith('/admin/login/') ||
     to.path.startsWith('/test-location')
 
   if (isPublic) return

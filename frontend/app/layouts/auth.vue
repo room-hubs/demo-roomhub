@@ -75,21 +75,21 @@ import { ref, computed, onMounted, onUnmounted, nextTick } from "vue";
 const slides = [
   {
     id: 1,
-    image: "/picture/auth-slide-1.jpg",
+    image: "https://i.pinimg.com/1200x/90/93/cc/9093ccb4711258e3c0501c5e3b1509e5.jpg",
     alt: "Modern apartment interior",
     quote: "Finding my new home took minutes, not months.",
     author: "— Sophea, verified tenant",
   },
   {
     id: 2,
-    image: "/picture/auth-slide-2.jpg",
+    image: "https://i.pinimg.com/736x/4d/0c/21/4d0c21e15ed9534d13d31a7847cba523.jpg",
     alt: "Cozy living room",
     quote: "Thousands of listings, all verified and up to date.",
     author: "— Dara, property owner",
   },
   {
     id: 3,
-    image: "/picture/auth-slide-3.jpg",
+    image: "https://i.pinimg.com/736x/cb/b4/d0/cbb4d0b818b7f2370b7eb1d3ffa96142.jpg",
     alt: "City skyline view",
     quote: "Buy, rent, or sell — all in one place.",
     author: "— Harbor Property",

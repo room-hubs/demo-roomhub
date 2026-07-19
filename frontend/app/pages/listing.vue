@@ -17,7 +17,7 @@ const toggleFav = (id) => {
 </script>
 <template>
   <main class="min-h-screen bg-gray-50">
-    <div class="mx-auto max-w-[1440px] px-4 py-8">
+    <div class="mx-auto max-w-360 px-4 py-8">
       <!-- Search -->
       <SearchMainSearch class="mb-10" />
       <!-- Header -->

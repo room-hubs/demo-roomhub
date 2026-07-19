@@ -1,0 +1,161 @@
+<script setup>
+const auth = useAuth();
+const toast = useToast();
+const open = ref(false);
+const authReady = useState("auth_ready", () => false);
+
+onMounted(async () => {
+  if (authReady.value) return;
+  await auth.initAuth();
+  authReady.value = true;
+});
+
+// navigate link
+const close = () => {
+  open.value = false;
+};
+
+const links = computed(() => [
+  [
+    {
+      label: "Home",
+      icon: "i-lucide-house",
+      to: "/admin",
+      onSelect: close,
+    },
+    {
+      label: "Inbox",
+      icon: "i-lucide-inbox",
+      to: "/inbox",
+      badge: "4",
+      onSelect: close,
+    },
+    {
+      label: "Customers",
+      icon: "i-lucide-users",
+      to: "/customers",
+      onSelect: close,
+    },
+    {
+      label: "Settings",
+      icon: "i-lucide-settings",
+      to: "/settings",
+      defaultOpen: true,
+      type: "trigger",
+      children: [
+        { label: "General", to: "/settings", exact: true, onSelect: close },
+        { label: "Members", to: "/settings/members", onSelect: close },
+        { label: "Notifications", to: "/settings/notifications", onSelect: close },
+        { label: "Security", to: "/settings/security", onSelect: close },
+      ],
+    },
+  ],
+  [
+    {
+      label: "Feedback",
+      icon: "i-lucide-message-circle",
+      to: "https://github.com/nuxt-ui-templates/dashboard",
+      target: "_blank",
+    },
+    {
+      label: "Help & Support",
+      icon: "i-lucide-info",
+      to: "https://github.com/nuxt-ui-templates/dashboard",
+      target: "_blank",
+    },
+  ],
+]);
+
+// Flattened for dashboard search
+const groups = computed(() => [
+  {
+    id: "links",
+    label: "Go to",
+    items: links.value.flat(),
+  },
+]);
+
+// COOKIE CONSENT
+const cookieConsentShown = useState("cookie_consent_shown", () => false);
+
+onMounted(() => {
+  if (!import.meta.client) return;
+  if (cookieConsentShown.value) return;
+
+  const cookie = useCookie("cookie-consent");
+  if (cookie.value === "accepted") return;
+
+  cookieConsentShown.value = true;
+
+  toast.add({
+    title: "We use first-party cookies to enhance your experience.",
+    duration: 0,
+    close: false,
+    actions: [
+      {
+        label: "Accept",
+        color: "neutral",
+        variant: "outline",
+        onClick: () => {
+          cookie.value = "accepted";
+        },
+      },
+      {
+        label: "Opt out",
+        color: "neutral",
+        variant: "ghost",
+      },
+    ],
+  });
+});
+</script>
+
+<template>
+  <UDashboardGroup unit="rem">
+    <UDashboardSidebar
+      id="default"
+      v-model="open"
+      collapsible
+      resizable
+      class="bg-elevated/25"
+      :ui="{ footer: 'lg:border-t lg:border-default' }"
+    >
+      <template #header="{ collapsed }">
+        <TeamsMenu :collapsed="collapsed" />
+      </template>
+
+      <template #default="{ collapsed }">
+        <UDashboardSearchButton
+          :collapsed="collapsed"
+          class="bg-transparent ring-default"
+        />
+
+        <UNavigationMenu
+          :collapsed="collapsed"
+          :items="links[0]"
+          orientation="vertical"
+          tooltip
+          popover
+        />
+
+        <UNavigationMenu
+          :collapsed="collapsed"
+          :items="links[1]"
+          orientation="vertical"
+          tooltip
+          class="mt-auto"
+        />
+      </template>
+
+      <template #footer="{ collapsed }">
+        <UserMenu :collapsed="collapsed" />
+      </template>
+    </UDashboardSidebar>
+
+    <UDashboardSearch :groups="groups" />
+
+    <slot />
+
+    <NotificationsSlideover />
+  </UDashboardGroup>
+</template>

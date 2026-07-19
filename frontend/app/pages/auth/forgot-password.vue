@@ -110,7 +110,7 @@ onUnmounted(() => {
       <input
         v-model="form.phone"
         type="tel"
-        placeholder="012 345 678"
+        placeholder="012 345 678 "
         class="w-full px-4 py-2.5 rounded-full border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none text-sm"
       />
 

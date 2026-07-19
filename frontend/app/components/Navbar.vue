@@ -45,7 +45,6 @@
       </div>
 
       <!-- ================= Tablet (768px - 1280px) ================= -->
-
       <div class="hidden shrink-0 items-center gap-3 md:flex xl:hidden">
         <NuxtLink
           to="/host"

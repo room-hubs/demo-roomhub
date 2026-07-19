@@ -89,31 +89,30 @@ const handleRegister = async () => {
     <!-- Form -->
     <form class="space-y-3" @submit.prevent="handleRegister">
       <input
-        v-model="form.name"
-        type="text"
-        placeholder="Full name"
-        autocomplete="name"
-        required
-        class="w-full px-4 py-2.5 rounded-full border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition text-sm"
-      />
-
-      <input
-        v-model="form.email"
-        type="email"
-        placeholder="Email address"
-        autocomplete="email"
-        required
-        class="w-full px-4 py-2.5 rounded-full border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition text-sm"
-      />
-
-      <input
         v-model="form.phone"
         type="tel"
-        placeholder="Phone number (optional)"
+        placeholder="Phone number"
         autocomplete="tel"
         class="w-full px-4 py-2.5 rounded-full border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition text-sm"
       />
-
+      <span class="flex gap-3">
+        <input
+          v-model="form.email"
+          type="email"
+          placeholder="Email address"
+          autocomplete="email"
+          required
+          class="w-full px-4 py-2.5 rounded-full border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition text-sm"
+        />
+        <input
+          v-model="form.name"
+          type="text"
+          placeholder="Full name"
+          autocomplete="name"
+          required
+          class="w-full px-4 py-2.5 rounded-full border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition text-sm"
+        />
+      </span>
       <input
         v-model="form.password"
         type="password"

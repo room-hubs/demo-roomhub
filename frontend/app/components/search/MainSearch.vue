@@ -1,7 +1,7 @@
 <template>
   <section class="w-full flex flex-wrap sm:flex-nowrap justify-center items-center gap-3">
     <div
-      class="bg-green-600 max-w-250 w-full rounded-md p-2 flex flex-wrap lg:flex-nowrap items-center gap-2"
+      class="max-w-250 w-full rounded-md p-2 flex flex-wrap lg:flex-nowrap items-center gap-2"
     >
       <!-- Location -->
       <div class="flex-1">
@@ -9,7 +9,7 @@
           v-model="locationQuery"
           type="text"
           placeholder="Search location..."
-          class="h-12 w-full rounded-full bg-white px-4 outline-none text-sm text-gray-700 placeholder-gray-400"
+          class="h-12 w-full rounded-full border border-green-500 bg-white px-4 text-sm text-gray-700 placeholder-gray-400 focus:border-green-500 focus:ring-1 focus:outline-none"
           @keyup.enter="applyFilters"
         />
       </div>
